@@ -155,10 +155,8 @@
             <div class="search">
                 <input type="text" placeholder="Buscar contacto">
             </div>
-            <div class="contacts">
-                <div class="contact">chats 1</div>
-                <div class="contact">chats 2</div>
-                <div class="contact">chats 3</div>
+            <div class="contacts" id="contactList">
+                <!-- Aquí se insertarán dinámicamente los contactos -->
             </div>
             <div class="menu">
                 <div class="menu-item" onclick="navigateTo('perfil', '{{ $mobileNumber }}')">Ver perfil</div>
@@ -211,14 +209,71 @@
             }
             window.location.href = url;
         }
-    
-        function isMobileDevice() {
-            return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+
+        // Función para obtener y mostrar los contactos
+        function fetchContacts() {
+            const userNumber = '{{ $mobileNumber }}'; // Obtener el número de teléfono del usuario
+
+            fetch(`https://yiyzolo.nyc.dom.my.id/api/mostarcontacto?numeroactual=${encodeURIComponent(userNumber)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener contactos');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayContacts(data.contactos); // Mostrar los contactos en la barra lateral
+            })
+            .catch(error => {
+                console.error('Error al obtener contactos:', error);
+                alert('Error al obtener contactos: ' + error.message);
+            });
         }
-    
-        if (isMobileDevice()) {
-            window.location.href = `{{ route('download') }}`;
+
+        function displayContacts(contacts) {
+            const contactList = document.getElementById('contactList');
+            contactList.innerHTML = ''; // Limpiar la lista de contactos
+
+            contacts.forEach(contact => {
+                const contactDiv = document.createElement('div');
+                contactDiv.classList.add('contact');
+                contactDiv.textContent = contact.nombre; // Mostrar el nombre del contacto
+
+                // Agregar evento click para simular el chat (esto puedes ajustarlo según tu lógica)
+                contactDiv.addEventListener('click', () => {
+                    simulateChat(contact);
+                });
+
+                contactList.appendChild(contactDiv);
+            });
         }
+
+        function simulateChat(contact) {
+            // Esta función es solo un ejemplo para simular un chat
+            const messagesDiv = document.querySelector('.chat .messages');
+            messagesDiv.innerHTML = ''; // Limpiar mensajes anteriores
+
+            // Simular mensajes
+            const messages = [
+                { type: 'sent', content: 'Hola, ¿cómo estás?' },
+                { type: 'received', content: `Hola, soy ${contact.nombre}. Estoy bien, ¿y tú?` },
+                { type: 'sent', content: 'Bien también, gracias.' },
+            ];
+
+            messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', message.type);
+                const contentDiv =                 document.createElement('div');
+                contentDiv.classList.add('content');
+                contentDiv.textContent = message.content;
+                messageDiv.appendChild(contentDiv);
+                messagesDiv.appendChild(messageDiv);
+            });
+        }
+
+        // Ejecutar al cargar la página para mostrar los contactos
+        fetchContacts();
     </script>
 </body>
 </html>
+

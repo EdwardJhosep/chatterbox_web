@@ -59,12 +59,14 @@
             padding: 10px;
             overflow-y: auto;
         }
-        .sidebar .contact {
+        .sidebar .contact-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 10px;
             border-bottom: 1px solid #ddd;
-            cursor: pointer;
         }
-        .sidebar .contact:hover {
+        .sidebar .contact-item:hover {
             background-color: #f9f9f9;
         }
         .chat {
@@ -108,13 +110,16 @@
             </div>
             <div class="container hidden" id="contactFormContainer">
                 <form id="contactForm" class="p-4">
-                    <div class="form-group">
-                        <label for="userNumber">Tu Número de Teléfono</label>
-                        <input type="text" class="form-control" id="userNumber" value="{{ $mobileNumber }}" readonly>
-                    </div>
+                    <input type="hidden" id="userNumber" value="{{ $mobileNumber }}">
                     <div class="form-group">
                         <label for="contactNumber">Número de Teléfono del Contacto</label>
                         <input type="text" class="form-control" id="contactNumber" placeholder="Número de teléfono del contacto" pattern="[0-9]{9}" title="Debe ser un número de 9 dígitos">
+                        <small id="contactNumberError" class="text-danger"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactName">Nombre del Contacto</label>
+                        <input type="text" class="form-control" id="contactName" placeholder="Nombre del contacto">
+                        <small id="contactNameError" class="text-danger"></small>
                     </div>
                     <button type="button" class="btn btn-success" onclick="addContact()">Guardar Contacto</button>
                 </form>
@@ -151,8 +156,9 @@
             }
             window.location.href = url;
         }
-    
+
         function showForm() {
+            document.getElementById('contactForm').reset(); // Reset form fields
             document.getElementById('contactFormContainer').classList.toggle('hidden');
             if (!document.getElementById('contactFormContainer').classList.contains('hidden')) {
                 fetchContacts(); // Fetch contacts when the form is shown
@@ -162,15 +168,26 @@
         function addContact() {
             const userNumber = document.getElementById('userNumber').value;
             const contactNumber = document.getElementById('contactNumber').value;
+            const contactName = document.getElementById('contactName').value;
+
+            // Reset previous error messages
+            document.getElementById('contactNumberError').textContent = '';
+            document.getElementById('contactNameError').textContent = '';
 
             // Validar el número de teléfono
             if (!contactNumber.match(/^\d{9}$/)) {
-                alert('El número de teléfono debe ser exactamente 9 dígitos.');
+                document.getElementById('contactNumberError').textContent = 'El número de teléfono debe ser exactamente 9 dígitos.';
+                return;
+            }
+
+            // Validar el nombre del contacto
+            if (!contactName.trim()) {
+                document.getElementById('contactNameError').textContent = 'El nombre del contacto no puede estar vacío.';
                 return;
             }
 
             // Call the API to add contact
-            fetch('http://popjupo.blr.dom.my.id/api/agregarcontacto', {
+            fetch('https://yiyzolo.nyc.dom.my.id/api/agregarcontacto', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -178,6 +195,7 @@
                 body: JSON.stringify({
                     numeroactual: userNumber,
                     numeroagregado: contactNumber,
+                    nombre: contactName, // Incluir el nombre del contacto en la solicitud
                 }),
             })
             .then(response => {
@@ -189,6 +207,8 @@
             .then(data => {
                 alert(data.message); // Show success message
                 fetchContacts(); // Refresh contacts list
+                document.getElementById('contactForm').reset(); // Reset form fields
+                document.getElementById('contactFormContainer').classList.add('hidden'); // Hide form container
             })
             .catch(error => {
                 alert('Error al agregar contacto: ' + error.message);
@@ -199,7 +219,7 @@
             const userNumber = document.getElementById('userNumber').value;
 
             // Call the API to fetch contacts
-            fetch(`http://popjupo.blr.dom.my.id/api/mostarcontacto?numeroactual=${encodeURIComponent(userNumber)}`)
+            fetch(`https://yiyzolo.nyc.dom.my.id/api/mostarcontacto?numeroactual=${            encodeURIComponent(userNumber)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Error al obtener contactos');
@@ -219,10 +239,45 @@
             contactList.innerHTML = '';
             contacts.forEach(contact => {
                 const contactItem = document.createElement('div');
-                contactItem.classList.add('contact');
-                contactItem.textContent = contact.numeroagregado;
+                contactItem.classList.add('contact-item');
+                contactItem.innerHTML = `
+                    <span>${contact.nombre}</span>
+                    <span>${contact.numeroagregado}</span>
+                    <button class="btn btn-sm btn-danger ml-2" onclick="eliminarContacto('${contact.numeroagregado}')">Eliminar</button>
+                `;
                 contactList.appendChild(contactItem);
             });
+        }
+
+        function eliminarContacto(numeroagregado) {
+            const userNumber = document.getElementById('userNumber').value;
+
+            if (confirm('¿Estás seguro de eliminar este contacto?')) {
+                // Call the API to delete contact
+                fetch('https://yiyzolo.nyc.dom.my.id/api/eliminarcontacto', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        numeroactual: userNumber,
+                        numeroagregado: numeroagregado,
+                    }),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al eliminar contacto');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.message); // Show success message
+                    fetchContacts(); // Refresh contacts list
+                })
+                .catch(error => {
+                    alert('Error al eliminar contacto: ' + error.message);
+                });
+            }
         }
 
         // Fetch contacts initially
@@ -230,3 +285,4 @@
     </script>
 </body>
 </html>
+
