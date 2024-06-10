@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Chatterbox - Inicio de sesión y Crear cuenta</title>
+    <title>Welcome to Chatterbox</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -63,7 +63,7 @@
     <div class="container">
         <h2 class="text-center mb-4">Chatterbox</h2>
         <div id="login-form">
-            <form id="loginForm" action="http://fugveti.blr.dom.my.id/api/login" method="post">
+            <form id="loginForm" action="http://popjupo.blr.dom.my.id/api/login" method="post">
                 <div class="form-group">
                     <input type="email" class="form-control" id="email" name="email" placeholder="Correo electrónico" required>
                 </div>
@@ -77,7 +77,7 @@
             </form>
         </div>
         <div id="signup-form" style="display: none;">
-            <form id="registerForm" action="http://fugveti.blr.dom.my.id/api/register" method="post">
+            <form id="registerForm" action="http://popjupo.blr.dom.my.id/api/register" method="post">
                 <div class="form-group">
                     <input type="text" class="form-control" id="name" name="name" placeholder="Nombre completo" required>
                 </div>
@@ -133,9 +133,11 @@
             })
             .then(data => {
                 console.log('Success:', data);
-                // Aquí podrías redirigir al usuario o hacer otra acción después de iniciar sesión exitosamente
                 alert('Sesión iniciada correctamente');
-                window.location.href = 'home'; // Redirigir al usuario a home.blade.php
+                
+                // Redirigir al usuario a la página de contacto
+                var mobileNumber = data.user.mobile_number;
+                window.location.href = 'contacto/' + mobileNumber; // Ajusta esto según tu ruta en Laravel
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -169,7 +171,6 @@
             .then(data => {
                 console.log('Success:', data);
                 alert('Usuario registrado correctamente');
-                // Aquí podrías redirigir al usuario o hacer otra acción después de registrar exitosamente
                 toggleForms(); // Cambiar al formulario de inicio de sesión
             })
             .catch(error => {

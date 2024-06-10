@@ -69,6 +69,15 @@
         .sidebar .contact:hover {
             background-color: #f9f9f9;
         }
+        .sidebar .menu {
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-top: 1px solid #ddd;
+        }
+        .sidebar .menu .menu-item {
+            padding: 10px;
+            cursor: pointer;
+        }
         .chat {
             display: flex;
             flex-direction: column;
@@ -140,13 +149,22 @@
     <div class="container">
         <div class="sidebar col-md-4 p-0">
             <div class="header">Chatterbox</div>
+            <div class="text-center">
+                <h6 class="text-3xl font-bold mb-4">USUARIO: {{ $mobileNumber }}</h6>
+            </div>
             <div class="search">
                 <input type="text" placeholder="Buscar contacto">
             </div>
             <div class="contacts">
-                <div class="contact">Contacto 1</div>
-                <div class="contact">Contacto 2</div>
-                <div class="contact">Contacto 3</div>
+                <div class="contact">chats 1</div>
+                <div class="contact">chats 2</div>
+                <div class="contact">chats 3</div>
+            </div>
+            <div class="menu">
+                <div class="menu-item" onclick="navigateTo('perfil', '{{ $mobileNumber }}')">Ver perfil</div>
+                <div class="menu-item" onclick="navigateTo('contactos', '{{ $mobileNumber }}')">Ver contactos</div>
+                <div class="menu-item" onclick="navigateTo('estados', '{{ $mobileNumber }}')">Estados</div>
+                <div class="menu-item" onclick="navigateTo('welcome')">Cerrar sesión</div>
             </div>
         </div>
         <div class="chat col-md-8 p-0">
@@ -165,9 +183,42 @@
             </div>
         </div>
     </div>
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script>
+        function navigateTo(page, mobileNumber = '') {
+            let url = '';
+            switch(page) {
+                case 'perfil':
+                    url = `{{ route('perfil', ['mobileNumber' => 'MOBILE_NUMBER']) }}`;
+                    break;
+                case 'contactos':
+                    url = `{{ route('contactos', ['mobileNumber' => 'MOBILE_NUMBER']) }}`;
+                    break;
+                case 'estados':
+                    url = `{{ route('estados', ['mobileNumber' => 'MOBILE_NUMBER']) }}`;
+                    break;
+                case 'welcome':
+                    url = `{{ route('welcome') }}`;
+                    break;
+                case 'download':
+                    url = `{{ route('download') }}`;
+                    break;
+                default:
+                    break;
+            }
+            if (mobileNumber) {
+                url = url.replace('MOBILE_NUMBER', mobileNumber);
+            }
+            window.location.href = url;
+        }
+    
+        function isMobileDevice() {
+            return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+        }
+    
+        if (isMobileDevice()) {
+            window.location.href = `{{ route('download') }}`;
+        }
+    </script>
 </body>
 </html>
