@@ -89,6 +89,9 @@
             color: white;
             font-size: 20px;
         }
+        .chat .header .contact-info {
+            font-size: 16px;
+        }
         .chat .messages {
             flex: 1;
             padding: 20px;
@@ -128,11 +131,14 @@
             background-color: #f0f0f0;
             display: flex;
         }
-        .chat .input input {
+        .chat .input input[type="text"] {
             flex: 1;
             padding: 10px;
             border-radius: 20px;
             border: 1px solid #ddd;
+            margin-right: 10px;
+        }
+        .chat .input input[type="file"] {
             margin-right: 10px;
         }
         .chat .input button {
@@ -150,7 +156,7 @@
         <div class="sidebar col-md-4 p-0">
             <div class="header">Chatterbox</div>
             <div class="text-center">
-                <h6 class="text-3xl font-bold mb-4">USUARIO: {{ $mobileNumber }}</h6>
+                <h6 class="text-3xl font-bold mb-4">Número de origen: {{ $mobileNumber }}</h6>
             </div>
             <div class="search">
                 <input type="text" placeholder="Buscar contacto">
@@ -166,18 +172,17 @@
             </div>
         </div>
         <div class="chat col-md-8 p-0">
-            <div class="header">Chat</div>
+            <div class="header">
+                Chat
+                <div class="contact-info"></div>
+            </div>
             <div class="messages">
-                <div class="message sent">
-                    <div class="content">Hola, ¿cómo estás?</div>
-                </div>
-                <div class="message received">
-                    <div class="content">Bien, ¿y tú?</div>
-                </div>
+                <!-- Aquí se insertarán dinámicamente los mensajes -->
             </div>
             <div class="input">
-                <input type="text" placeholder="Escribe un mensaje">
-                <button>Enviar</button>
+                <input type="text" id="messageInput" placeholder="Escribe un mensaje">
+                <input type="file" id="fileInput" accept="image/jpeg,image/png,video/mp4">
+                <button onclick="sendMessage()">Enviar</button>
             </div>
         </div>
     </div>
@@ -237,8 +242,10 @@
             contacts.forEach(contact => {
                 const contactDiv = document.createElement('div');
                 contactDiv.classList.add('contact');
-                contactDiv.textContent = contact.nombre; // Mostrar el nombre del contacto
-
+                
+                // y el número del contacto
+                contactDiv.innerHTML = `<strong>${contact.nombre}</strong><br>${contact.numeroagregado}`;
+                
                 // Agregar evento click para simular el chat (esto puedes ajustarlo según tu lógica)
                 contactDiv.addEventListener('click', () => {
                     simulateChat(contact);
@@ -253,6 +260,10 @@
             const messagesDiv = document.querySelector('.chat .messages');
             messagesDiv.innerHTML = ''; // Limpiar mensajes anteriores
 
+            // Actualizar el encabezado del chat con el nombre y número del contacto
+            const contactInfoDiv = document.querySelector('.chat .header .contact-info');
+            contactInfoDiv.textContent = `${contact.nombre} - ${contact.numeroagregado}`;
+
             // Simular mensajes
             const messages = [
                 { type: 'sent', content: 'Hola, ¿cómo estás?' },
@@ -263,7 +274,7 @@
             messages.forEach(message => {
                 const messageDiv = document.createElement('div');
                 messageDiv.classList.add('message', message.type);
-                const contentDiv =                 document.createElement('div');
+                const contentDiv = document.createElement('div');
                 contentDiv.classList.add('content');
                 contentDiv.textContent = message.content;
                 messageDiv.appendChild(contentDiv);
@@ -271,7 +282,63 @@
             });
         }
 
-        // Ejecutar al cargar la página para mostrar los contactos
+        // Función para enviar un mensaje
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const fileInput = document.getElementById('fileInput');
+            const userNumber = '{{ $mobileNumber }}';
+            const contactNumber = document.querySelector('.chat .header .contact-info').textContent.split(' - ')[1];
+
+            const formData = new FormData();
+            formData.append('numero_origen', userNumber);
+            formData.append('numero_destino', contactNumber);
+            formData.append('mensaje', messageInput.value);
+
+            // Verificar si se ha seleccionado un archivo y agregarlo al FormData
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const fileType = file.type.split('/')[0]; // Obtener el tipo de archivo (imagen o video)
+                
+                if (fileType === 'image') {
+                    formData.append('foto', file); // Ajustar el nombre del campo según el backend
+                } else if (fileType === 'video') {
+                    formData.append('video', file); // Ajustar el nombre del campo según el backend
+                } else {
+                    alert('Tipo de archivo no compatible. Por favor, seleccione una imagen o video.');
+                    return;
+                }
+            }
+
+            fetch('https://yiyzolo.nyc.dom.my.id/api/enviar-mensaje', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al enviar el mensaje');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Actualizar la interfaz de usuario con el nuevo mensaje enviado
+                const messagesDiv = document.querySelector('.chat .messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', 'sent');
+                const contentDiv = document.createElement('div');
+                contentDiv.classList.add('content');
+                contentDiv.textContent = messageInput.value;
+                messageDiv.appendChild(contentDiv);
+                messagesDiv.appendChild(messageDiv);
+
+                // Limpiar el campo de entrada
+                messageInput.value = '';
+            })
+            .catch(error => {
+                console.error('Error al enviar el mensaje:', error);
+                alert('Error al enviar el mensaje: ' + error.message);
+            });
+        }
+
         fetchContacts();
     </script>
 </body>
