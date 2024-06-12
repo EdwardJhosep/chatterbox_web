@@ -62,12 +62,20 @@
             overflow-y: auto;
         }
         .sidebar .contact {
+            display: flex;
+            align-items: center;
             padding: 10px;
             border-bottom: 1px solid #ddd;
             cursor: pointer;
         }
         .sidebar .contact:hover {
             background-color: #f9f9f9;
+        }
+        .sidebar .contact img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
         }
         .sidebar .menu {
             padding: 10px;
@@ -219,7 +227,7 @@
         function fetchContacts() {
             const userNumber = '{{ $mobileNumber }}'; // Obtener el número de teléfono del usuario
 
-            fetch(`https://yiyzolo.nyc.dom.my.id/api/mostarcontacto?numeroactual=${encodeURIComponent(userNumber)}`)
+            fetch(`https://cirjoco.nyc.dom.my.id/api/mostarcontacto?numeroactual=${encodeURIComponent(userNumber)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Error al obtener contactos');
@@ -242,9 +250,15 @@
             contacts.forEach(contact => {
                 const contactDiv = document.createElement('div');
                 contactDiv.classList.add('contact');
-                
-                // y el número del contacto
-                contactDiv.innerHTML = `<strong>${contact.nombre}</strong><br>${contact.numeroagregado}`;
+
+                // Incluir imagen del avatar y detalles del contacto
+                contactDiv.innerHTML = `
+                    <img src="${contact.user.avatar}" alt="${contact.nombre}">
+                    <div>
+                        <strong>${contact.nombre}</strong><br>
+                        ${contact.numeroagregado}
+                    </div>
+                `;
                 
                 // Agregar evento click para cargar el chat del contacto
                 contactDiv.addEventListener('click', () => {
@@ -295,7 +309,7 @@
                 }
             }
 
-            fetch('https://yiyzolo.nyc.dom.my.id/api/enviar-mensaje', {
+            fetch('https://cirjoco.nyc.dom.my.id/api/enviar-mensaje', {
                 method: 'POST',
                 body: formData
             })
