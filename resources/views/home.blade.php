@@ -181,7 +181,7 @@
             </div>
             <div class="input">
                 <input type="text" id="messageInput" placeholder="Escribe un mensaje">
-                <input type="file" id="fileInput" accept="image/jpeg,image/png,video/mp4">
+                <input type="file" id="fileInput" accept="image/jpeg">
                 <button onclick="sendMessage()">Enviar</button>
             </div>
         </div>
@@ -246,40 +246,29 @@
                 // y el número del contacto
                 contactDiv.innerHTML = `<strong>${contact.nombre}</strong><br>${contact.numeroagregado}`;
                 
-                // Agregar evento click para simular el chat (esto puedes ajustarlo según tu lógica)
+                // Agregar evento click para cargar el chat del contacto
                 contactDiv.addEventListener('click', () => {
-                    simulateChat(contact);
+                    loadChat(contact);
                 });
 
                 contactList.appendChild(contactDiv);
             });
         }
 
-        function simulateChat(contact) {
-            // Esta función es solo un ejemplo para simular un chat
-            const messagesDiv = document.querySelector('.chat .messages');
-            messagesDiv.innerHTML = ''; // Limpiar mensajes anteriores
-
+        function loadChat(contact) {
             // Actualizar el encabezado del chat con el nombre y número del contacto
             const contactInfoDiv = document.querySelector('.chat .header .contact-info');
             contactInfoDiv.textContent = `${contact.nombre} - ${contact.numeroagregado}`;
 
-            // Simular mensajes
-            const messages = [
-                { type: 'sent', content: 'Hola, ¿cómo estás?' },
-                { type: 'received', content: `Hola, soy ${contact.nombre}. Estoy bien, ¿y tú?` },
-                { type: 'sent', content: 'Bien también, gracias.' },
-            ];
+            // Limpiar el campo de entrada de mensaje
+            const messageInput = document.getElementById('messageInput');
+            messageInput.value = '';
 
-            messages.forEach(message => {
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('message', message.type);
-                const contentDiv = document.createElement('div');
-                contentDiv.classList.add('content');
-                contentDiv.textContent = message.content;
-                messageDiv.appendChild(contentDiv);
-                messagesDiv.appendChild(messageDiv);
-            });
+            // Limpiar los mensajes del chat
+            const messagesDiv = document.querySelector('.chat .messages');
+            messagesDiv.innerHTML = '';
+
+            // Aquí podrías añadir lógica para cargar mensajes reales del chat con este contacto
         }
 
         // Función para enviar un mensaje
@@ -297,14 +286,11 @@
             // Verificar si se ha seleccionado un archivo y agregarlo al FormData
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
-                const fileType = file.type.split('/')[0]; // Obtener el tipo de archivo (imagen o video)
                 
-                if (fileType === 'image') {
+                if (file.type === 'image/jpeg') {
                     formData.append('foto', file); // Ajustar el nombre del campo según el backend
-                } else if (fileType === 'video') {
-                    formData.append('video', file); // Ajustar el nombre del campo según el backend
                 } else {
-                    alert('Tipo de archivo no compatible. Por favor, seleccione una imagen o video.');
+                    alert('Tipo de archivo no compatible. Por favor, seleccione una imagen JPEG.');
                     return;
                 }
             }
@@ -332,6 +318,7 @@
 
                 // Limpiar el campo de entrada
                 messageInput.value = '';
+                fileInput.value = '';
             })
             .catch(error => {
                 console.error('Error al enviar el mensaje:', error);
@@ -343,4 +330,3 @@
     </script>
 </body>
 </html>
-
