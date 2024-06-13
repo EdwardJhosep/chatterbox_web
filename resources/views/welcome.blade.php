@@ -63,7 +63,7 @@
     <div class="container">
         <h2 class="text-center mb-4">Chatterbox</h2>
         <div id="login-form">
-            <form id="loginForm" action="https://cirjoco.nyc.dom.my.id/api/login" method="post">
+            <form id="loginForm" action="http://gigrowi.blr.dom.my.id/api/login" method="post">
                 <div class="form-group">
                     <input type="email" class="form-control" id="email" name="email" placeholder="Correo electrónico" required>
                 </div>
@@ -77,7 +77,7 @@
             </form>
         </div>
         <div id="signup-form" style="display: none;">
-            <form id="registerForm" action="https://cirjoco.nyc.dom.my.id/api/register" method="post">
+            <form id="registerForm" action="http://gigrowi.blr.dom.my.id/api/register" method="post">
                 <div class="form-group">
                     <input type="text" class="form-control" id="name" name="name" placeholder="Nombre completo" required>
                 </div>

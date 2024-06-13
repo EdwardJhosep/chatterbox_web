@@ -227,7 +227,7 @@
         function fetchContacts() {
             const userNumber = '{{ $mobileNumber }}'; // Obtener el número de teléfono del usuario
 
-            fetch(`https://cirjoco.nyc.dom.my.id/api/mostarcontacto?numeroactual=${encodeURIComponent(userNumber)}`)
+            fetch(`http://gigrowi.blr.dom.my.id/api/mostarcontacto?numeroactual=${encodeURIComponent(userNumber)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Error al obtener contactos');
@@ -309,7 +309,7 @@
                 }
             }
 
-            fetch('https://cirjoco.nyc.dom.my.id/api/enviar-mensaje', {
+            fetch('http://gigrowi.blr.dom.my.id/api/enviar-mensaje', {
                 method: 'POST',
                 body: formData
             })

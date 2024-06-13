@@ -187,7 +187,7 @@
             }
 
             // Call the API to add contact
-            fetch('https://cirjoco.nyc.dom.my.id/api/agregarcontacto', {
+            fetch('http://gigrowi.blr.dom.my.id/api/agregarcontacto', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -219,7 +219,7 @@
             const userNumber = document.getElementById('userNumber').value;
 
             // Call the API to fetch contacts
-            fetch(`https://cirjoco.nyc.dom.my.id/api/mostarcontacto?numeroactual=${encodeURIComponent(userNumber)}`)
+            fetch(`http://gigrowi.blr.dom.my.id/api/mostarcontacto?numeroactual=${encodeURIComponent(userNumber)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Error al obtener contactos');
@@ -254,7 +254,7 @@
 
             if (confirm('¿Estás seguro de eliminar este contacto?')) {
                 // Call the API to delete contact
-                fetch('https://cirjoco.nyc.dom.my.id/api/eliminarcontacto', {
+                fetch('http://gigrowi.blr.dom.my.id/api/eliminarcontacto', {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
